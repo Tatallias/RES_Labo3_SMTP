@@ -5,10 +5,9 @@ import RES.Labo3_SMTP.mail.common.Message;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.logging.Logger;
 
 public class SmtpClient {
-	private static final Logger LOG = Logger.getLogger(SmtpClient.class.getName());
+	//private static final Logger LOG = Logger.getLogger(SmtpClient.class.getName());
 
     private String serverAddress;
     private int port;
@@ -23,72 +22,72 @@ public class SmtpClient {
 
     public void sendMessage(Message message) throws IOException{
 
-        LOG.info("Sending message");
+        System.out.println("Sending message");
         socket = new Socket(serverAddress, port);
         writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"),true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         String readLine = reader.readLine();
-        LOG.info(readLine);
+        System.out.println(readLine);
         writer.write("EHLO " + serverAddress + "\r\n");
         writer.flush();
         while (readLine.startsWith("250-")){
             readLine = reader.readLine();
-            LOG.info(readLine);
+            System.out.println(readLine);
         }
         if(serverAddress.contains("mailtrap")){
             writer.write("AUTH LOGIN\r\n");
             writer.flush();
             readLine = reader.readLine();
-            LOG.info(readLine);
+            System.out.println(readLine);
             writer.write("NTMyZDQzNWFkYTI1MjI=\r\n");
             writer.flush();
             readLine = reader.readLine();
-            LOG.info(readLine);
+            System.out.println(readLine);
             writer.write("Yjg1ODZhZThhY2M4Njk=\r\n");
             writer.flush();
         }
         readLine = reader.readLine();
-        LOG.info(readLine);
-        /*if(!readLine.startsWith("250")){
+        System.out.println(readLine);
+        if(!readLine.startsWith("250")){
             throw new IOException("error : " + readLine);
-        }*/
+        }
         while (readLine.startsWith("250-")){
             readLine = reader.readLine();
-            LOG.info(readLine);
+            System.out.println(readLine);
         }
 
-        writer.write("MAIL FROM:" + message.getSender() + "\r\n");
+        writer.write("MAIL FROM: <" + message.getSender() + ">\r\n");
         writer.flush();
         readLine = reader.readLine();
-        /*if (!readLine.endsWith("accepted")){
+        if (!readLine.endsWith("OK")){
             System.out.println("error : " + readLine);
-        }*/
-        LOG.info(readLine);
+        }
+        System.out.println(readLine);
 
         for (String reciever : message.getRecievers()){
-            writer.write("RCPT TO: " + reciever + "\r\n");
+            writer.write("RCPT TO: <" + reciever + ">\r\n");
             writer.flush();
             readLine = reader.readLine();
-            /*if (!readLine.endsWith("accepted")){
+            if (!readLine.endsWith("OK")){
                 System.out.println("error : " + readLine);
-            }*/
-            LOG.info(readLine);
+            }
+            System.out.println(readLine);
         }
 
         for (String reciever : message.getCC()){
-            writer.write("RCPT TO: " + reciever + "\r\n");
+            writer.write("RCPT TO: <" + reciever + ">\r\n");
             writer.flush();
             readLine = reader.readLine();
-            /*if (!readLine.endsWith("accepted")){
+            if (!readLine.endsWith("OK")){
                 System.out.println("error : " + readLine);
-            }*/
-            LOG.info(readLine);
+            }
+            System.out.println(readLine);
         }
 
         writer.write("DATA\r\n");
         writer.flush();
         readLine = reader.readLine();
-        LOG.info(readLine);
+        System.out.println(readLine);
         writer.write("From: " + message.getSender() + "\r\n");
         writer.flush();
         writer.write("To: " + message.getRecievers().get(0));
@@ -113,7 +112,7 @@ public class SmtpClient {
         if(!readLine.contains("accepted")){
             System.out.println("error : " + readLine);
         }
-        LOG.info(readLine);
+        System.out.println(readLine);
         writer.write("QUIT\r\n");
         writer.flush();
         reader.close();
