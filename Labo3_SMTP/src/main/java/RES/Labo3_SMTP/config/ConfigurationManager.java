@@ -33,16 +33,16 @@ public class ConfigurationManager {
 		FileReader file = new FileReader("./config/messages.utf8");
 		BufferedReader buffRead = new BufferedReader(file);
 		
-		String message = "";
+		StringBuilder message = new StringBuilder();
 		String line = null;
 
 		while ((line = buffRead.readLine()) != null)
 		{    
-		    if(line == "==") {
-		    	messages.add(message);
-		    	message = "";
+		    if(line.equals("==")) {
+		    	messages.add(message.toString());
+		    	message = new StringBuilder();
 		    } else {
-		    	message.concat("\n" + line);
+		    	message.append(line + "\r\n");
 		    }
 		}
 		buffRead.close();
