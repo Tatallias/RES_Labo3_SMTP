@@ -5,9 +5,9 @@ import RES.Labo3_SMTP.mail.common.Message;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 public class SmtpClient {
-	//private static final Logger LOG = Logger.getLogger(SmtpClient.class.getName());
 
     private String serverAddress;
     private int port;
@@ -20,7 +20,7 @@ public class SmtpClient {
         this.port = port;
     }
 
-    public void sendMessage(Message message) throws IOException{
+    public void sendMessage(Message message) throws IOException, InterruptedException {
 
         System.out.println("Sending message");
         socket = new Socket(serverAddress, port);
@@ -34,18 +34,20 @@ public class SmtpClient {
             readLine = reader.readLine();
             System.out.println(readLine);
         }
+
         if(serverAddress.contains("mailtrap")){
             writer.write("AUTH LOGIN\r\n");
             writer.flush();
-            readLine = reader.readLine();
-            System.out.println(readLine);
+            //readLine = reader.readLine();
+            //System.out.println(readLine);
             writer.write("NTMyZDQzNWFkYTI1MjI=\r\n");
             writer.flush();
-            readLine = reader.readLine();
-            System.out.println(readLine);
+            //readLine = reader.readLine();
+            //System.out.println(readLine);
             writer.write("Yjg1ODZhZThhY2M4Njk=\r\n");
             writer.flush();
         }
+
         readLine = reader.readLine();
         System.out.println(readLine);
         if(!readLine.startsWith("250")){
@@ -59,26 +61,29 @@ public class SmtpClient {
         writer.write("MAIL FROM: <" + message.getSender() + ">\r\n");
         writer.flush();
         readLine = reader.readLine();
-        if (!readLine.endsWith("OK")){
+        if (!readLine.endsWith("Ok")){
             System.out.println("error : " + readLine);
         }
         System.out.println(readLine);
 
-        for (String reciever : message.getRecievers()){
+        for (String reciever : message.getRecievers()) {
             writer.write("RCPT TO: <" + reciever + ">\r\n");
             writer.flush();
             readLine = reader.readLine();
-            if (!readLine.endsWith("OK")){
+            if (!readLine.endsWith("Ok")) {
                 System.out.println("error : " + readLine);
             }
             System.out.println(readLine);
+            if (serverAddress.contains("mailtrap")) {
+                TimeUnit.SECONDS.sleep(5);
+            }
         }
 
         for (String reciever : message.getCC()){
             writer.write("RCPT TO: <" + reciever + ">\r\n");
             writer.flush();
             readLine = reader.readLine();
-            if (!readLine.endsWith("OK")){
+            if (!readLine.endsWith("Ok")){
                 System.out.println("error : " + readLine);
             }
             System.out.println(readLine);
@@ -109,11 +114,10 @@ public class SmtpClient {
         writer.write(message.getMessage() + "\r\n.\r\n");
         writer.flush();
         readLine = reader.readLine();
-        if(!readLine.contains("accepted")){
-            System.out.println("error : " + readLine);
-        }
         System.out.println(readLine);
-        writer.write("QUIT\r\n");
+        writer.write("quit\r\n");
+        readLine = reader.readLine();
+        System.out.println(readLine);
         writer.flush();
         reader.close();
         writer.close();
