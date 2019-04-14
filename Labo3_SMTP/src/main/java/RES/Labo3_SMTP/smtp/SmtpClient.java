@@ -36,7 +36,7 @@ public class SmtpClient {
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         String readLine = reader.readLine();
         LOG.info(readLine);
-        writer.write("EHLO localhost \r\n");
+        writer.print("EHLO localhost \r\n");
         readLine = reader.readLine();
         LOG.info(readLine);
         if(!readLine.startsWith("250")){
@@ -47,10 +47,57 @@ public class SmtpClient {
             LOG.info(readLine);
         }
 
-        //writer.write("MAIL FROM:" + message);
+        writer.print("MAIL FROM:" + message.getSender() + "\r\n");
+        readLine = reader.readLine();
+        if (!readLine.endsWith("accepted")){
+            System.out.println("error : " + readLine);
+        }
+        LOG.info(readLine);
 
+        for (String reciever : message.getRecievers()){
+            writer.print("RCPT TO: " + reciever + "\r\n");
+            readLine = reader.readLine();
+            if (!readLine.endsWith("accepted")){
+                System.out.println("error : " + readLine);
+            }
+            LOG.info(readLine);
+        }
 
+        for (String reciever : message.getCC()){
+            writer.print("RCPT TO: " + reciever + "\r\n");
+            readLine = reader.readLine();
+            if (!readLine.endsWith("accepted")){
+                System.out.println("error : " + readLine);
+            }
+            LOG.info(readLine);
+        }
+
+        writer.print("DATA\r\n");
+        readLine = reader.readLine();
+        LOG.info(readLine);
+        writer.print("From: " + message.getSender() + "\r\n");
+        writer.print("To: " + message.getRecievers().get(0));
+        for(int i = 1; i < message.getRecievers().size(); i++){
+            writer.print(", " + message.getRecievers().get(i));
+        }
+        writer.print("\r\n");
+
+        writer.print("Cc: " + message.getCC().get(0));
+        for(int i = 1; i < message.getCC().size(); i++){
+            writer.print(", " + message.getCC().get(i));
+        }
+        writer.print("\r\n");
+
+        writer.print(message.getMessage() + "\r\n.\r\n");
+        readLine = reader.readLine();
+        if(!readLine.contains("accepted")){
+            System.out.println("error : " + readLine);
+        }
+        LOG.info(readLine);
+        writer.print("QUIT\r\n");
+        reader.close();
+        writer.flush();
+        writer.close();
+        socket.close();
     }
-
-
 }
