@@ -8,11 +8,7 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 public class SmtpClient {
-
-
-
-
-    private static final Logger LOG = Logger.getLogger(SmtpClient.class.getName());
+	private static final Logger LOG = Logger.getLogger(SmtpClient.class.getName());
 
     private String serverAddress;
     private int port;
@@ -20,13 +16,10 @@ public class SmtpClient {
     private PrintWriter writer;
     private BufferedReader reader;
 
-
     public SmtpClient(String serverAddress, int port){
         this.serverAddress = serverAddress;
         this.port = port;
     }
-
-
 
     public void sendMessage(Message message) throws IOException{
 

@@ -1,36 +1,28 @@
 package RES.Labo3_SMTP;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Hello world!
- *
- */
+import RES.Labo3_SMTP.config.ConfigurationManager;
+import RES.Labo3_SMTP.mail.prank.Prank;
+import RES.Labo3_SMTP.mail.prank.PrankGenerator;
+import RES.Labo3_SMTP.smtp.SmtpClient;
+
 public class App
 {
-
-    public static void main(String[] args) {
-
-        LinkedList<String> victims = new LinkedList<String>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader("config"));//nom fichier a définir
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-                for (String s : values){
-                    victims.add(s);
-                }
-            }
-        }
-        catch (Exception ex){
-            System.out.println("error");
-        }
-
-
+	public static void main(String[] args) {
+		ConfigurationManager configManager = new ConfigurationManager();
+		PrankGenerator pg = new PrankGenerator(configManager);
+		List<Prank> pranks = pg.generatePranks();
+		SmtpClient sc = new SmtpClient(configManager.getServerAdress(), configManager.getServerPort());
+		
+		for(Prank p : pranks) {
+			try {
+				sc.sendMessage(p.createMessage());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
     }
 
 }
