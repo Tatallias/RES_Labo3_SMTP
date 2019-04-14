@@ -6,7 +6,6 @@ import java.util.Random;
 
 import RES.Labo3_SMTP.config.ConfigurationManager;
 import RES.Labo3_SMTP.mail.common.Group;
-import RES.Labo3_SMTP.mail.common.Message;
 import RES.Labo3_SMTP.mail.common.Person;
 
 public class PrankGenerator {
@@ -38,8 +37,15 @@ public class PrankGenerator {
 		Group[] groups = new Group[configManager.getNumberOfGroups()];
 		List<Person> victims = configManager.getVictims();
 		
+		if(groups.length <= victims.size() / 3) {
+			throw new IllegalArgumentException("Not enough victims in file for this many groups");
+		}
 		
-		
+		int index = 0;
+		while(victims.size() != 0) {
+			groups[index].addMember(victims.remove(rand.nextInt(victims.size())));
+			index = (index + 1) % groups.length;
+		}
 		
 		return groups;
 	}
