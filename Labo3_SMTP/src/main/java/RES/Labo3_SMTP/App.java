@@ -20,6 +20,7 @@ public class App
 		for(Prank p : pranks) {
 			try {
 				sc.sendMessage(p.createMessage());
+				TimeUnit.SECONDS.sleep(5);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -20,7 +20,7 @@ public class SmtpClient {
         this.port = port;
     }
 
-    public void sendMessage(Message message) throws IOException, InterruptedException {
+    public void sendMessage(Message message) throws IOException {
 
         System.out.println("Sending message");
         socket = new Socket(serverAddress, port);
@@ -38,12 +38,12 @@ public class SmtpClient {
         if(serverAddress.contains("mailtrap")){
             writer.write("AUTH LOGIN\r\n");
             writer.flush();
-            //readLine = reader.readLine();
-            //System.out.println(readLine);
+            readLine = reader.readLine();
+            System.out.println(readLine);
             writer.write("NTMyZDQzNWFkYTI1MjI=\r\n");
             writer.flush();
-            //readLine = reader.readLine();
-            //System.out.println(readLine);
+            readLine = reader.readLine();
+            System.out.println(readLine);
             writer.write("Yjg1ODZhZThhY2M4Njk=\r\n");
             writer.flush();
         }
@@ -74,9 +74,6 @@ public class SmtpClient {
                 System.out.println("error : " + readLine);
             }
             System.out.println(readLine);
-            if (serverAddress.contains("mailtrap")) {
-                TimeUnit.SECONDS.sleep(5);
-            }
         }
 
         for (String reciever : message.getCC()){
@@ -93,10 +90,11 @@ public class SmtpClient {
         writer.flush();
         readLine = reader.readLine();
         System.out.println(readLine);
+
         writer.write("From: " + message.getSender() + "\r\n");
         writer.flush();
+
         writer.write("To: " + message.getRecievers().get(0));
-        writer.flush();
         for(int i = 1; i < message.getRecievers().size(); i++){
             writer.write(", " + message.getRecievers().get(i));
         }
@@ -104,18 +102,22 @@ public class SmtpClient {
         writer.flush();
 
         writer.write("Cc: " + message.getCC().get(0));
-        writer.flush();
         for(int i = 1; i < message.getCC().size(); i++){
             writer.write(", " + message.getCC().get(i));
         }
         writer.write("\r\n");
         writer.flush();
 
+        readLine = reader.readLine();
+        System.out.println(readLine);
         writer.write(message.getMessage() + "\r\n.\r\n");
         writer.flush();
+
         readLine = reader.readLine();
         System.out.println(readLine);
         writer.write("quit\r\n");
+        writer.flush();
+
         readLine = reader.readLine();
         System.out.println(readLine);
         writer.flush();
