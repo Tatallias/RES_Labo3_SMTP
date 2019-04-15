@@ -1,4 +1,4 @@
-smtpServerAddress=smtp.mailtrap.io
-smtpServerPort=2525
+smtpServerAddress=localhost
+smtpServerPort=25
 numberOfGroups=3
 CCs=some-random-dude@mail.com and-another-dude@mail.pl
